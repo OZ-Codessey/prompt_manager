@@ -18,7 +18,7 @@ RESET          = "\033[0m"                           # Color Reset
 LINE_DIVIDER   = f"{WARM_TAUPE}────────────────────────────────────────────────────{RESET}"
 
 # ==============================================================================
-# 2. 초기 프롬프트 데이터셋 (01번 ~ 08번 원본 100% 수록)
+# 2. 초기 프롬프트 데이터셋 (01번 ~ 08번 원본 본문 100% 수록)
 # ==============================================================================
 prompts = [
     {
@@ -134,6 +134,7 @@ def show_menu():
     print(f"   {MENU_TEXT}2. 프롬프트 상세 보기{RESET}          {MUTED_GRAY}(Prompt Detail){RESET}")
     print(f"   {MENU_TEXT}3. 스마트 키워드 검색{RESET}          {MUTED_GRAY}(Smart Search){RESET}")
     print(f"   {MENU_TEXT}4. 카테고리별 조회{RESET}            {MUTED_GRAY}(Filter by Category){RESET}")
+    print(f"   {MENU_TEXT}5. 셀렉션 즐겨찾기 관리{RESET}        {MUTED_GRAY}(Selection & Favorites){RESET}")
     print(f"   {MUTED_GRAY}Q. 스튜디오 종료               (Exit Studio){RESET}")
     print(LINE_DIVIDER)
 
@@ -271,10 +272,38 @@ def show_by_category(prompts_list):
         show_list(filtered, f"CATEGORY: {selected_cat}")
         get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
 
+def show_favorites(prompts_list):
+    clear_screen()
+    fav_list = [p for p in prompts_list if p["is_favorite"]]
+    show_list(fav_list, "★ SELECTION COLLECTION")
+    print(f"   {CREAM_WHITE}[a] 셀렉션 토글 스위치 (즐겨찾기 추가/해제){RESET}")
+    print(f"   {MUTED_GRAY}[b] 메인 메뉴로 돌아가기{RESET}")
+    print(LINE_DIVIDER)
+
+    choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Option 선택 [a, b: 메인 메뉴] : {RESET}")
+    if choice.lower() == 'a':
+        toggle_favorite(prompts_list)
+
+def toggle_favorite(prompts_list):
+    show_list(prompts_list, "SELECTION TOGGLE SWITCH")
+    choice = get_clean_input(f"   {PARANSE_ORANGE}👉 프롬프트 ID 선택 [b: 메인 메뉴] : {RESET}")
+    
+    if choice.isdigit():
+        target_id = int(choice)
+        target = next((p for p in prompts_list if p["id"] == target_id), None)
+        if target:
+            target["is_favorite"] = not target["is_favorite"]
+            status_text = "즐겨찾기(★) 등록 완료" if target["is_favorite"] else "즐겨찾기 해제 완료"
+            print(f"\n   ✨ {CREAM_WHITE}[{target['title']}] {status_text}{RESET}")
+            get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
+
+# ==============================================================================
+# 5. 메인 실행 루프
+# ==============================================================================
 def main():
     while True:
         show_menu()
-        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~4, Q] : {RESET}")
+        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~5, Q] : {RESET}")
 
         if choice == '1':
             show_list(prompts, "ALL PROMPT COLLECTION")
@@ -285,6 +314,8 @@ def main():
             search_prompt(prompts)
         elif choice == '4':
             show_by_category(prompts)
+        elif choice == '5':
+            show_favorites(prompts)
         elif choice.lower() in ['q', 'exit', 'quit']:
             clear_screen()
             print("\n" + LINE_DIVIDER)
@@ -293,7 +324,7 @@ def main():
             print(LINE_DIVIDER + "\n")
             break
         else:
-            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~4, Q] 중 선택해 주세요.{RESET}")
+            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~5, Q] 중 선택해 주세요.{RESET}")
 
 if __name__ == "__main__":
     main()
