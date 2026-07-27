@@ -122,7 +122,7 @@ def highlight_text(text, keyword):
     return pattern.sub(lambda m: f"{ORANGE_BG_TEXT}{m.group(0)}{RESET}{CREAM_WHITE}", text)
 
 # ==============================================================================
-# 4. 주요 화면 및 기능 구현 (기능 1, 2, 3)
+# 4. 주요 화면 및 기능 구현 (기능 1, 2, 3, 4)
 # ==============================================================================
 def show_menu():
     clear_screen()
@@ -133,6 +133,7 @@ def show_menu():
     print(f"   {MENU_TEXT}1. 전체 컬렉션 조회{RESET}            {MUTED_GRAY}(Collection List){RESET}")
     print(f"   {MENU_TEXT}2. 프롬프트 상세 보기{RESET}          {MUTED_GRAY}(Prompt Detail){RESET}")
     print(f"   {MENU_TEXT}3. 스마트 키워드 검색{RESET}          {MUTED_GRAY}(Smart Search){RESET}")
+    print(f"   {MENU_TEXT}4. 카테고리별 조회{RESET}            {MUTED_GRAY}(Filter by Category){RESET}")
     print(f"   {MUTED_GRAY}Q. 스튜디오 종료               (Exit Studio){RESET}")
     print(LINE_DIVIDER)
 
@@ -246,10 +247,27 @@ def search_prompt(prompts_list):
         if target:
             show_single_detail(target, keyword)
 
+def show_by_category(prompts_list):
+    clear_screen()
+    print("\n" + LINE_DIVIDER)
+    print(f"   {PARANSE_ORANGE}📁 FILTER BY CATEGORY{RESET}")
+    print(LINE_DIVIDER + "\n")
+
+    categories = sorted(list(set(p["category"] for p in prompts_list if p["category"].strip())))
+    for idx, cat in enumerate(categories, 1):
+        print(f"     {idx}. {cat}")
+    
+    choice = get_clean_input(f"\n   {PARANSE_ORANGE}👉 Category 선택 [1~{len(categories)}, b: 메인 메뉴] : {RESET}")
+    if choice.isdigit() and 1 <= int(choice) <= len(categories):
+        selected_cat = categories[int(choice) - 1]
+        filtered = [p for p in prompts_list if p["category"] == selected_cat]
+        show_list(filtered, f"CATEGORY: {selected_cat}")
+        get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
+
 def main():
     while True:
         show_menu()
-        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~3, Q] : {RESET}")
+        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~4, Q] : {RESET}")
 
         if choice == '1':
             show_list(prompts, "ALL PROMPT COLLECTION")
@@ -258,6 +276,8 @@ def main():
             open_detail_view(prompts)
         elif choice == '3':
             search_prompt(prompts)
+        elif choice == '4':
+            show_by_category(prompts)
         elif choice.lower() in ['q', 'exit', 'quit']:
             clear_screen()
             print("\n" + LINE_DIVIDER)
@@ -266,7 +286,7 @@ def main():
             print(LINE_DIVIDER + "\n")
             break
         else:
-            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~3, Q] 중 선택해 주세요.{RESET}")
+            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~4, Q] 중 선택해 주세요.{RESET}")
 
 if __name__ == "__main__":
     main()
