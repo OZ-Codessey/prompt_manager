@@ -116,7 +116,7 @@ def get_clean_input(prompt_text):
         sys.exit(0)
 
 # ==============================================================================
-# 4. 주요 화면 및 기능 구현 (기능 1 전용)
+# 4. 주요 화면 및 기능 구현 (기능 1, 2)
 # ==============================================================================
 def show_menu():
     clear_screen()
@@ -125,6 +125,7 @@ def show_menu():
     print(f"                 {HEADER_WHITE}P R O M P T   S T U D I O{RESET}         ")
     print(LINE_DIVIDER)
     print(f"   {MENU_TEXT}1. 전체 컬렉션 조회{RESET}            {MUTED_GRAY}(Collection List){RESET}")
+    print(f"   {MENU_TEXT}2. 프롬프트 상세 보기{RESET}          {MUTED_GRAY}(Prompt Detail){RESET}")
     print(f"   {MUTED_GRAY}Q. 스튜디오 종료               (Exit Studio){RESET}")
     print(LINE_DIVIDER)
 
@@ -146,14 +147,57 @@ def show_list(prompts_list, title_text="ALL PROMPT COLLECTION"):
 
     print("\n" + LINE_DIVIDER)
 
+def open_detail_view(prompts_list):
+    show_list(prompts_list, "PROMPT DETAIL VIEW")
+    choice = get_clean_input(f"   {PARANSE_ORANGE}👉 프롬프트 ID 선택 [1~{len(prompts_list)}, b: 메인 메뉴] : {RESET}")
+    
+    if choice.lower() in ['b', 'back']:
+        return
+
+    if not choice.isdigit():
+        get_clean_input(f"   👉 {MUTED_GRAY}올바른 숫자 번호를 입력해 주세요. (Enter: 메인 메뉴){RESET}")
+        return
+
+    target_id = int(choice)
+    target = next((p for p in prompts_list if p["id"] == target_id), None)
+
+    if not target:
+        get_clean_input(f"   👉 {MUTED_GRAY}해당 ID의 프롬프트를 찾을 수 없습니다. (Enter: 메인 메뉴){RESET}")
+        return
+
+    show_single_detail(target)
+
+def show_single_detail(target):
+    clear_screen()
+    fav_status = f"{PARANSE_ORANGE}★ FAVORITE{RESET}" if target["is_favorite"] else f"{MUTED_GRAY}Standard{RESET}"
+    
+    title_display = target["title"].strip() if target["title"].strip() else "(제목 없음)"
+    cat_display = target["category"].strip() if target["category"].strip() else "(카테고리 미지정)"
+    content_display = target["content"].strip() if target["content"].strip() else f"{MUTED_GRAY}(내용 없음 / 비어있음){RESET}"
+
+    print("\n" + LINE_DIVIDER)
+    print(f"   {PARANSE_ORANGE}📄 PROMPT DETAIL VIEW [{target['id']:02d}]{RESET}")
+    print(LINE_DIVIDER)
+    print(f"   {CREAM_WHITE}• 제목       :{RESET} {title_display}")
+    print(f"   {CREAM_WHITE}• 카테고리   :{RESET} {cat_display}")
+    print(f"   {CREAM_WHITE}• 즐겨찾기   :{RESET} {fav_status}")
+    print(LINE_DIVIDER)
+    print(f"   {WARM_TAUPE}[ 프롬프트 내용 (Content) ]{RESET}\n")
+    print(f"   {content_display}")
+    print("\n" + LINE_DIVIDER)
+    
+    get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
+
 def main():
     while True:
         show_menu()
-        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1, Q] : {RESET}")
+        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~2, Q] : {RESET}")
 
         if choice == '1':
             show_list(prompts, "ALL PROMPT COLLECTION")
             get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
+        elif choice == '2':
+            open_detail_view(prompts)
         elif choice.lower() in ['q', 'exit', 'quit']:
             clear_screen()
             print("\n" + LINE_DIVIDER)
@@ -162,7 +206,7 @@ def main():
             print(LINE_DIVIDER + "\n")
             break
         else:
-            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1, Q] 중 선택해 주세요.{RESET}")
+            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~2, Q] 중 선택해 주세요.{RESET}")
 
 if __name__ == "__main__":
     main()
