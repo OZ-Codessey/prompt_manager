@@ -115,8 +115,14 @@ def get_clean_input(prompt_text):
         print("\n\n  프로그램을 종료합니다.")
         sys.exit(0)
 
+def highlight_text(text, keyword):
+    if not keyword or not text:
+        return text
+    pattern = re.compile(re.escape(keyword), re.IGNORECASE)
+    return pattern.sub(lambda m: f"{ORANGE_BG_TEXT}{m.group(0)}{RESET}{CREAM_WHITE}", text)
+
 # ==============================================================================
-# 4. 주요 화면 및 기능 구현 (기능 1, 2)
+# 4. 주요 화면 및 기능 구현 (기능 1, 2, 3)
 # ==============================================================================
 def show_menu():
     clear_screen()
@@ -126,6 +132,7 @@ def show_menu():
     print(LINE_DIVIDER)
     print(f"   {MENU_TEXT}1. 전체 컬렉션 조회{RESET}            {MUTED_GRAY}(Collection List){RESET}")
     print(f"   {MENU_TEXT}2. 프롬프트 상세 보기{RESET}          {MUTED_GRAY}(Prompt Detail){RESET}")
+    print(f"   {MENU_TEXT}3. 스마트 키워드 검색{RESET}          {MUTED_GRAY}(Smart Search){RESET}")
     print(f"   {MUTED_GRAY}Q. 스튜디오 종료               (Exit Studio){RESET}")
     print(LINE_DIVIDER)
 
@@ -167,13 +174,19 @@ def open_detail_view(prompts_list):
 
     show_single_detail(target)
 
-def show_single_detail(target):
+def show_single_detail(target, keyword=""):
     clear_screen()
     fav_status = f"{PARANSE_ORANGE}★ FAVORITE{RESET}" if target["is_favorite"] else f"{MUTED_GRAY}Standard{RESET}"
     
     title_display = target["title"].strip() if target["title"].strip() else "(제목 없음)"
     cat_display = target["category"].strip() if target["category"].strip() else "(카테고리 미지정)"
     content_display = target["content"].strip() if target["content"].strip() else f"{MUTED_GRAY}(내용 없음 / 비어있음){RESET}"
+
+    if keyword:
+        title_display = highlight_text(title_display, keyword)
+        cat_display = highlight_text(cat_display, keyword)
+        if target["content"].strip():
+            content_display = highlight_text(content_display, keyword)
 
     print("\n" + LINE_DIVIDER)
     print(f"   {PARANSE_ORANGE}📄 PROMPT DETAIL VIEW [{target['id']:02d}]{RESET}")
@@ -188,16 +201,63 @@ def show_single_detail(target):
     
     get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
 
+def search_prompt(prompts_list):
+    clear_screen()
+    print("\n" + LINE_DIVIDER)
+    print(f"   {PARANSE_ORANGE}🔍 SMART KEYWORD SEARCH{RESET}")
+    print(LINE_DIVIDER + "\n")
+
+    keyword = get_clean_input(f"   {PARANSE_ORANGE}👉 검색 키워드 입력 [b: 메인 메뉴] : {RESET}")
+    if keyword.lower() in ['b', 'back'] or not keyword:
+        return
+
+    results = [
+        p for p in prompts_list 
+        if keyword.lower() in p["title"].lower() 
+        or keyword.lower() in p["content"].lower() 
+        or keyword.lower() in p["category"].lower()
+    ]
+
+    clear_screen()
+    print("\n" + LINE_DIVIDER)
+    print(f"   {PARANSE_ORANGE}+ SEARCH RESULTS FOR '{keyword}'{RESET}")
+    print(LINE_DIVIDER + "\n")
+
+    if not results:
+        print(f"   ⚠️ {MUTED_GRAY}'{keyword}'에 일치하는 프롬프트가 없습니다.{RESET}\n")
+    else:
+        for p in results:
+            fav_tag = f"[{PARANSE_ORANGE}★ FAVORITE{RESET}]" if p["is_favorite"] else f"[{MUTED_GRAY} Standard {RESET}]"
+            p_id = f"{p['id']:02d}"
+            
+            t_raw = p["title"].strip() if p["title"].strip() else "(제목 없음)"
+            c_raw = p["category"].strip() if p["category"].strip() else "카테고리 미지정"
+            
+            t_hl = highlight_text(t_raw, keyword)
+            c_hl = highlight_text(c_raw, keyword)
+            
+            print(f"   {p_id}  {fav_tag} {t_hl} ({c_hl})")
+
+    print("\n" + LINE_DIVIDER)
+    choice = get_clean_input(f"   {PARANSE_ORANGE}👉 프롬프트 ID 선택 [b: 메인 메뉴] : {RESET}")
+    if choice.isdigit():
+        target_id = int(choice)
+        target = next((p for p in results if p["id"] == target_id), None)
+        if target:
+            show_single_detail(target, keyword)
+
 def main():
     while True:
         show_menu()
-        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~2, Q] : {RESET}")
+        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~3, Q] : {RESET}")
 
         if choice == '1':
             show_list(prompts, "ALL PROMPT COLLECTION")
             get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
         elif choice == '2':
             open_detail_view(prompts)
+        elif choice == '3':
+            search_prompt(prompts)
         elif choice.lower() in ['q', 'exit', 'quit']:
             clear_screen()
             print("\n" + LINE_DIVIDER)
@@ -206,7 +266,7 @@ def main():
             print(LINE_DIVIDER + "\n")
             break
         else:
-            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~2, Q] 중 선택해 주세요.{RESET}")
+            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~3, Q] 중 선택해 주세요.{RESET}")
 
 if __name__ == "__main__":
     main()
