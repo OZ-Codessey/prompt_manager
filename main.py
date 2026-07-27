@@ -18,7 +18,7 @@ RESET          = "\033[0m"                           # Color Reset
 LINE_DIVIDER   = f"{WARM_TAUPE}────────────────────────────────────────────────────{RESET}"
 
 # ==============================================================================
-# 2. 초기 프롬프트 데이터셋 (01번 ~ 08번)
+# 2. 초기 프롬프트 데이터셋 (01번 ~ 08번 원본 100% 수록)
 # ==============================================================================
 prompts = [
     {
@@ -122,7 +122,7 @@ def highlight_text(text, keyword):
     return pattern.sub(lambda m: f"{ORANGE_BG_TEXT}{m.group(0)}{RESET}{CREAM_WHITE}", text)
 
 # ==============================================================================
-# 4. 주요 화면 및 기능 구현 (기능 1, 2, 3, 4)
+# 4. 주요 화면 및 기능 구현
 # ==============================================================================
 def show_menu():
     clear_screen()
@@ -253,7 +253,14 @@ def show_by_category(prompts_list):
     print(f"   {PARANSE_ORANGE}📁 FILTER BY CATEGORY{RESET}")
     print(LINE_DIVIDER + "\n")
 
-    categories = sorted(list(set(p["category"] for p in prompts_list if p["category"].strip())))
+    category_order = ["이미지 생성", "영상 생성", "오디오 생성", "페르소나", "자동화", "기타"]
+    extracted = list(set(p["category"].strip() for p in prompts_list if p["category"].strip()))
+    
+    categories = sorted(
+        extracted, 
+        key=lambda c: category_order.index(c) if c in category_order else 999
+    )
+
     for idx, cat in enumerate(categories, 1):
         print(f"     {idx}. {cat}")
     
