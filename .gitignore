@@ -1,4 +1,13 @@
+# macOS 시스템 파일 (맥북이 폴더를 열 때 자동으로 만드는 설정 파일)
 .DS_Store
+
+# Python 실행 시 자동으로 생기는 임시 캐시 파일 및 폴더
 __pycache__/
 *.pyc
+
+# Python 가상환경 폴더 (용량이 큰 외부 부품 폴더 차단)
 .venv/
+venv/
+
+# VS Code 개인 설정 폴더
+.vscode/
