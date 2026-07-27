@@ -18,7 +18,7 @@ RESET          = "\033[0m"                           # Color Reset
 LINE_DIVIDER   = f"{WARM_TAUPE}────────────────────────────────────────────────────{RESET}"
 
 # ==============================================================================
-# 2. 초기 프롬프트 데이터셋 (01번 ~ 08번 원본 본문 100% 수록)
+# 2. 초기 프롬프트 데이터셋 (01번 ~ 08번)
 # ==============================================================================
 prompts = [
     {
@@ -102,6 +102,67 @@ Parang-Sê는 '파랑새'의 인문학적 성찰을 사적인 주거 공간의 �
     },
 ]
 
+# ==============================================================================
+# 3. 유틸리티 함수
+# ==============================================================================
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
+
+def get_clean_input(prompt_text):
+    try:
+        return input(prompt_text).strip()
+    except (KeyboardInterrupt, EOFError):
+        print("\n\n  프로그램을 종료합니다.")
+        sys.exit(0)
+
+# ==============================================================================
+# 4. 주요 화면 및 기능 구현 (기능 1 전용)
+# ==============================================================================
+def show_menu():
+    clear_screen()
+    print("\n" + LINE_DIVIDER)
+    print(f"             {PARANSE_ORANGE}P A R A N S Ê   B U S A N{RESET}             ")
+    print(f"                 {HEADER_WHITE}P R O M P T   S T U D I O{RESET}         ")
+    print(LINE_DIVIDER)
+    print(f"   {MENU_TEXT}1. 전체 컬렉션 조회{RESET}            {MUTED_GRAY}(Collection List){RESET}")
+    print(f"   {MUTED_GRAY}Q. 스튜디오 종료               (Exit Studio){RESET}")
+    print(LINE_DIVIDER)
+
+def show_list(prompts_list, title_text="ALL PROMPT COLLECTION"):
+    clear_screen()
+    print("\n" + LINE_DIVIDER)
+    print(f"   {PARANSE_ORANGE}+ {title_text}{RESET}")
+    print(LINE_DIVIDER + "\n")
+
+    if not prompts_list:
+        print(f"   ⚠️ {MUTED_GRAY}등록되거나 조건에 맞는 프롬프트가 없습니다.{RESET}\n")
+    else:
+        for p in prompts_list:
+            fav_tag = f"[{PARANSE_ORANGE}★ FAVORITE{RESET}]" if p["is_favorite"] else f"[{MUTED_GRAY} Standard {RESET}]"
+            p_id = f"{p['id']:02d}"
+            t_text = p["title"].strip() if p["title"].strip() else "(제목 없음)"
+            c_text = f"({p['category'].strip()})" if p["category"].strip() else "(카테고리 미지정)"
+            print(f"   {p_id}  {fav_tag} {t_text} {c_text}")
+
+    print("\n" + LINE_DIVIDER)
+
+def main():
+    while True:
+        show_menu()
+        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1, Q] : {RESET}")
+
+        if choice == '1':
+            show_list(prompts, "ALL PROMPT COLLECTION")
+            get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
+        elif choice.lower() in ['q', 'exit', 'quit']:
+            clear_screen()
+            print("\n" + LINE_DIVIDER)
+            print(f"   {PARANSE_ORANGE}⚜️  PARANG-SÊ BUSAN PROMPT STUDIO를 이용해 주셔서 감사합니다.{RESET}")
+            print(f"   {WARM_TAUPE}“L'art de la parole et de la pensée.”{RESET}")
+            print(LINE_DIVIDER + "\n")
+            break
+        else:
+            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1, Q] 중 선택해 주세요.{RESET}")
+
 if __name__ == "__main__":
-    print(f"{PARANSE_ORANGE}디자인 시스템 및 데이터셋 설정 완료!{RESET}")
-    print(f"등록된 총 프롬프트 수: {len(prompts)}개")
+    main()
