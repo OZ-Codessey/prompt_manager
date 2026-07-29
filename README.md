@@ -23,8 +23,16 @@
 ```sh
 python3 main.py  
 ```  
+<br>
 
-<br>  
+>[in Terminal]
+
+- cd Desktop  
+- git clone https://github.com/OZ-Codessey/prompt_manager.git  
+- cd prompt_manager  
+- python3 main.py
+
+<br> <br>  
 
 ##  Prompt Categories Guide
 >본 스튜디오에 수록된 프롬프트는 아래 6가지 핵심 카테고리로 체계적으로 분류되어 관리됩니다.
@@ -63,16 +71,20 @@ python3 main.py
 
 | 커밋 단계 | 커밋 메시지 (Commit Message) | 주요 작업 내용 |
 | :--- | :--- | :--- |
-| **Commit 1** | `first commit` | 저장소 초기화 및 기본 파일 생성 |
-| **Commit 2** | `제외 파일 추가` | `.gitignore` 추적 제외 파일 설정 |
-| **Commit 3** | `style: Initialize Orange Boite design system and prompt dataset` | 디자인 시스템 ANSI 컬러 및 초기 01~08 프롬프트 데이터 구축 |
-| **Commit 4** | `feat: Add main menu UI and full collection list feature` | 메인 메뉴 UI 및 전체 프롬프트 컬렉션 조회 기능 구현 |
-| **Commit 5** | `feat: Add prompt detail view functionality` | 프롬프트 ID 선택 및 상세 내용 보기 화면 구현 |
-| **Commit 6** | `feat: Implement smart search with partial matching and highlighting` | 키워드 동적 검색 및 검색어 하이라이팅 기능 구현 |
-| **Commit 7** | `feat: Add dynamic category filtering functionality` | 카테고리 동적 필터링 및 조회 기능 구현 |
-| **Commit 8** | `refactor: Apply custom sorting order to category filter menu` | 카테고리 정렬 순서 개선 ('기타' 항목을 맨 뒤로 이동) |
-| **Commit 9** | `feat: Add selection favorites toggle feature and finalize main application` | 셀렉션 즐겨찾기 관리/토글 스위치 구현 및 메인 앱 완성 |
-| **Commit 10** | `docs: Update README with project guidelines and real commit history` | 교안 요구사항 충족 프로젝트 문서 작성 및 커밋 로그 정리 |  
+| Commit 1 | `first commit` | 저장소 초기화 및 기본 파일 생성 |
+| Commit 2 | `제외 파일 추가` | `.gitignore` 추적 제외 파일 설정 |
+| Commit 3 | `style: Initialize Orange Boite design system and prompt dataset` | 디자인 시스템 ANSI 컬러 및 초기 01~08 프롬프트 데이터 구축 |
+| Commit 4 | `feat: Add main menu UI and full collection list feature` | 메인 메뉴 UI 및 전체 프롬프트 컬렉션 조회 기능 구현 |
+| Commit 5 | `feat: Add prompt detail view functionality` | 프롬프트 ID 선택 및 상세 내용 보기 화면 구현 |
+| Commit 6 | `feat: Implement smart search with partial matching and highlighting` | 키워드 동적 검색 및 검색어 하이라이팅 기능 구현 |
+| Commit 7 | `feat: Add dynamic category filtering functionality` | 카테고리 동적 필터링 및 조회 기능 구현 |
+| Commit 8 | `refactor: Apply custom sorting order to category filter menu` | 카테고리 정렬 순서 개선 ('기타' 항목을 맨 뒤로 이동) |
+| Commit 9 | `feat: Add selection favorites toggle feature and finalize main application` | 셀렉션 즐겨찾기 관리/토글 스위치 구현 및 메인 앱 완성 |
+| Commit 10 | `docs: Update README with project guidelines and real commit history` | 교안 요구사항 충족 프로젝트 문서 작성 및 커밋 로그 정리 |
+| Commit 11 | `feat: Add new prompt registration feature and input handling` | 프롬프트 신규 등록 기능(제목·카테고리·내용 입력 및 ID 자동 부여) 구현 및 터미널 입력 처리 최적화 |
+| Commit 12 | `feat: Implement prompt list view with ID, title, category, and favorite status` | 프롬프트 목록 조회 및 예외 처리 기능 (`feature/prompt-list` 브랜치) |
+
+ 
 <br><br>
 
 
