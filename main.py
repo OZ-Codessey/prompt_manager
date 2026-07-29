@@ -127,14 +127,15 @@ def highlight_text(text, keyword):
 def show_menu():
     clear_screen()
     print("\n" + LINE_DIVIDER)
-    print(f"             {PARANSE_ORANGE}P A R A N S Ê   B U S A N{RESET}             ")
-    print(f"                 {HEADER_WHITE}P R O M P T   S T U D I O{RESET}         ")
+    print(f"              {PARANSE_ORANGE}P A R A N S Ê   B U S A N{RESET}              ")
+    print(f"                  {HEADER_WHITE}P R O M P T   S T U D I O{RESET}         ")
     print(LINE_DIVIDER)
     print(f"   {MENU_TEXT}1. 전체 컬렉션 조회{RESET}            {MUTED_GRAY}(Collection List){RESET}")
     print(f"   {MENU_TEXT}2. 프롬프트 상세 보기{RESET}          {MUTED_GRAY}(Prompt Detail){RESET}")
     print(f"   {MENU_TEXT}3. 스마트 키워드 검색{RESET}          {MUTED_GRAY}(Smart Search){RESET}")
     print(f"   {MENU_TEXT}4. 카테고리별 조회{RESET}            {MUTED_GRAY}(Filter by Category){RESET}")
     print(f"   {MENU_TEXT}5. 셀렉션 즐겨찾기 관리{RESET}        {MUTED_GRAY}(Selection & Favorites){RESET}")
+    print(f"   {MENU_TEXT}6. 프롬프트 신규 등록{RESET}          {MUTED_GRAY}(Add New Prompt){RESET}")
     print(f"   {MUTED_GRAY}Q. 스튜디오 종료               (Exit Studio){RESET}")
     print(LINE_DIVIDER)
 
@@ -297,13 +298,89 @@ def toggle_favorite(prompts_list):
             print(f"\n   ✨ {CREAM_WHITE}[{target['title']}] {status_text}{RESET}")
             get_clean_input(f"   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
 
+def add_prompt(prompts_list):
+    clear_screen()
+    print("\n" + LINE_DIVIDER)
+    print(f"   {PARANSE_ORANGE}➕ ADD NEW PROMPT{RESET}")
+    print(LINE_DIVIDER + "\n")
+
+    # 1. 제목 입력 (필수)
+    while True:
+        title = get_clean_input(f"   {PARANSE_ORANGE}👉 제목 입력 (필수) [b: 메인 메뉴] : {RESET}")
+        if title.lower() in ['b', 'back']:
+            return
+        if title:
+            break
+        print(f"   ⚠️ {MUTED_GRAY}제목은 필수 입력 항목입니다. 다시 입력해 주세요.{RESET}\n")
+
+    # 2. 카테고리 선택 및 입력 (필수)
+    category_options = ["이미지 생성", "영상 생성", "오디오 생성", "페르소나", "자동화", "기타"]
+    print(f"\n   {CREAM_WHITE}[ 카테고리 선택 ]{RESET}")
+    for idx, cat in enumerate(category_options, 1):
+        print(f"     {idx}. {cat}")
+    print(f"     7. 직접 입력 (예: 텍스트 생성 등)")
+
+    while True:
+        cat_choice = get_clean_input(f"\n   {PARANSE_ORANGE}👉 카테고리 선택/입력 (필수) : {RESET}")
+        
+        if not cat_choice:
+            print(f"   ⚠️ {MUTED_GRAY}카테고리는 필수 입력 항목입니다. 다시 입력해 주세요.{RESET}")
+            continue
+
+        if cat_choice.isdigit():
+            num = int(cat_choice)
+            if 1 <= num <= len(category_options):
+                category = category_options[num - 1]
+                break
+            elif num == 7:
+                custom_cat = get_clean_input(f"   {PARANSE_ORANGE}👉 카테고리 직접 입력 (예: 텍스트 생성) : {RESET}")
+                if custom_cat:
+                    category = custom_cat
+                    break
+                else:
+                    print(f"   ⚠️ {MUTED_GRAY}카테고리는 비워둘 수 없습니다.{RESET}")
+                    continue
+            else:
+                print(f"   ⚠️ {MUTED_GRAY}올바른 번호를 선택해 주세요.{RESET}")
+                continue
+        else:
+            category = cat_choice
+            break
+
+    # 3. 내용 입력 (필수)
+    while True:
+        content = get_clean_input(f"\n   {PARANSE_ORANGE}👉 내용 입력 (필수) : {RESET}")
+        if content:
+            break
+        print(f"   ⚠️ {MUTED_GRAY}프롬프트 내용은 필수 입력 항목입니다. 엔터만 누를 수 없습니다.{RESET}")
+
+    # 4. 새 ID 자동 생성 (기존 최대 ID + 1)
+    new_id = max([p["id"] for p in prompts_list], default=0) + 1
+
+    # 5. 새 프롬프트 데이터 생성 (즐겨찾기 기본값 False)
+    new_prompt = {
+        "id": new_id,
+        "title": title,
+        "category": category,
+        "content": content,
+        "is_favorite": False
+    }
+
+    # 6. 메모리 리스트에 저장
+    prompts_list.append(new_prompt)
+
+    print("\n" + LINE_DIVIDER)
+    print(f"   ✨ {CREAM_WHITE}[{title}] 프롬프트가 성공적으로 등록되었습니다! (ID: {new_id:02d}){RESET}")
+    print(LINE_DIVIDER)
+    get_clean_input(f"\n   👉 {MUTED_GRAY}Enter 키를 누르면 메인 메뉴로 돌아갑니다...{RESET}")
+
 # ==============================================================================
 # 5. 메인 실행 루프
 # ==============================================================================
 def main():
     while True:
         show_menu()
-        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~5, Q] : {RESET}")
+        choice = get_clean_input(f"   {PARANSE_ORANGE}👉 Select Menu [1~6, Q] : {RESET}")
 
         if choice == '1':
             show_list(prompts, "ALL PROMPT COLLECTION")
@@ -316,6 +393,8 @@ def main():
             show_by_category(prompts)
         elif choice == '5':
             show_favorites(prompts)
+        elif choice == '6':
+            add_prompt(prompts)
         elif choice.lower() in ['q', 'exit', 'quit']:
             clear_screen()
             print("\n" + LINE_DIVIDER)
@@ -324,7 +403,7 @@ def main():
             print(LINE_DIVIDER + "\n")
             break
         else:
-            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~5, Q] 중 선택해 주세요.{RESET}")
+            get_clean_input(f"   ⚠️ {MUTED_GRAY}잘못된 입력입니다. [1~6, Q] 중 선택해 주세요.{RESET}")
 
 if __name__ == "__main__":
     main()
